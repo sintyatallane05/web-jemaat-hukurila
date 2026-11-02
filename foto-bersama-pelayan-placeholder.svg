@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720">
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#173b36"/><stop offset="1" stop-color="#315d4e"/></linearGradient></defs>
+  <rect width="1200" height="720" fill="url(#bg)"/>
+  <circle cx="600" cy="245" r="130" fill="#e4c77d" opacity=".12"/>
+  <path d="M600 110v170M550 160h100" stroke="#e4c77d" stroke-width="10" stroke-linecap="round"/>
+  <g fill="#f7f2e7" opacity=".9"><circle cx="380" cy="350" r="42"/><circle cx="490" cy="330" r="42"/><circle cx="600" cy="315" r="42"/><circle cx="710" cy="330" r="42"/><circle cx="820" cy="350" r="42"/><path d="M310 510c0-65 32-105 70-105s70 40 70 105v20H310zM420 495c0-75 32-120 70-120s70 45 70 120v35H420zM530 480c0-85 32-135 70-135s70 50 70 135v50H530zM640 495c0-75 32-120 70-120s70 45 70 120v35H640zM750 510c0-65 32-105 70-105s70 40 70 105v20H750z"/></g>
+  <text x="600" y="610" fill="#f7f2e7" font-family="Arial,sans-serif" font-size="32" font-weight="700" text-anchor="middle">FOTO BERSAMA PENDETA &amp; MAJELIS</text>
+  <text x="600" y="654" fill="#e4c77d" font-family="Arial,sans-serif" font-size="22" text-anchor="middle">Ganti gambar ini dengan foto bersama yang asli</text>
+</svg>
