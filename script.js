@@ -202,7 +202,6 @@ const DEFAULTS = {
   "informasi-lain": {
     heading: { kicker: "Informasi · Pengumuman", title: "Pengumuman", desc: "Informasi penting, pengumuman pelayanan, dan kabar lain untuk warga jemaat." },
     items: []
-
   },
   kontak: {
     heading: {
@@ -247,7 +246,9 @@ function getPart(sec, part) {
     const remote = Array.isArray(val) ? val : [];
     const byId = new Map(remote.filter(x => !x.deleted).map(x => [String(x.id), x]));
     const merged = defaults
-      .filter(x => !deletedWorshipIds.has(String(x.id)))
+      // Jika ada baris data remote, gunakan data itu walaupun berstatus draft.
+      // Jika hanya ada penanda hidden/deleted, jangan tampilkan default ke publik.
+      .filter(x => byId.has(String(x.id)) || !deletedWorshipIds.has(String(x.id)))
       .map(x => byId.has(String(x.id)) ? { ...x, ...byId.get(String(x.id)) } : x);
     const defaultIds = new Set(defaults.map(x => String(x.id)));
     remote.filter(x => !x.deleted && !defaultIds.has(String(x.id))).forEach(x => merged.push(x));
@@ -269,8 +270,9 @@ async function loadStoreFromSupabase() {
   for (const row of (data || [])) {
     if (row.section === "ibadah" && row.part === "items") {
       remoteWorshipRows.push(row);
-      if (row.data?.deleted && row.data?.id) deletedWorshipIds.add(String(row.data.id));
-      else {
+      if ((row.data?.deleted || row.data?.hidden) && row.data?.id) {
+        deletedWorshipIds.add(String(row.data.id));
+      } else {
         next.ibadah = next.ibadah || {};
         next.ibadah.items = next.ibadah.items || [];
         next.ibadah.items.push({ ...(row.data || {}), sector: row.sector || "" });
@@ -316,7 +318,17 @@ async function savePartToSupabase(sec, part, value) {
         item_key: String(item.id), data: { id: item.id, deleted: true },
         published: true, updated_by: nowUser.id
       }));
-    const rowsToSave = [...desiredRows, ...tombstones];
+    // Penanda publikasi tetap boleh dibaca publik (hanya berisi ID),
+    // sehingga jadwal default yang dijadikan draft tidak muncul kembali.
+    const visibilityMarkers = desired
+      .filter(item => item.published === false)
+      .map(item => ({
+        section: "ibadah", part: "items", sector: item.sector || "",
+        item_key: `${String(item.id)}::__visibility`,
+        data: { id: item.id, hidden: true },
+        published: true, updated_by: nowUser.id
+      }));
+    const rowsToSave = [...desiredRows, ...tombstones, ...visibilityMarkers];
 
     if (rowsToSave.length) {
       const { error } = await supabaseClient.from("site_content").upsert(rowsToSave, {
@@ -1056,27 +1068,58 @@ function fieldsOf(part) {
 }
 
 /* ---------- Gambar: perkecil otomatis agar hemat penyimpanan ---------- */
-function fileToDataUrl(file) {
-  return new Promise((resolve, reject) => {
-    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) return reject(new Error("Pilih gambar JPG, PNG, atau WebP."));
-    if (file.size > 8 * 1024 * 1024) return reject(new Error("Ukuran gambar terlalu besar (maksimal 8 MB)."));
-    const url = URL.createObjectURL(file);
-    const img = new Image();
-    img.onload = () => {
-      const png = file.type === "image/png";
-      const max = png ? 900 : 1400;
-      const ratio = Math.min(1, max / Math.max(img.width, img.height));
-      const c = document.createElement("canvas");
-      c.width = Math.round(img.width * ratio); c.height = Math.round(img.height * ratio);
-      const ctx = c.getContext("2d");
-      if (!png) { ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, c.width, c.height); }
-      ctx.drawImage(img, 0, 0, c.width, c.height);
-      URL.revokeObjectURL(url);
-      resolve(png ? c.toDataURL("image/png") : c.toDataURL("image/jpeg", 0.82));
-    };
-    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("Gagal membaca gambar.")); };
-    img.src = url;
-  });
+async function fileToStorageUrl(file) {
+  if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+    throw new Error("Pilih gambar JPG, PNG, atau WebP.");
+  }
+  if (file.size > 8 * 1024 * 1024) {
+    throw new Error("Ukuran gambar terlalu besar (maksimal 8 MB).");
+  }
+
+  const { data: authData, error: authError } = await supabaseClient.auth.getUser();
+  if (authError || !authData?.user) {
+    throw new Error("Sesi admin tidak ditemukan. Silakan login kembali.");
+  }
+
+  const objectUrl = URL.createObjectURL(file);
+  try {
+    const image = await new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = () => reject(new Error("Gagal membaca gambar."));
+      img.src = objectUrl;
+    });
+
+    const keepPng = file.type === "image/png";
+    const max = keepPng ? 900 : 1400;
+    const ratio = Math.min(1, max / Math.max(image.width, image.height));
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.max(1, Math.round(image.width * ratio));
+    canvas.height = Math.max(1, Math.round(image.height * ratio));
+    const ctx = canvas.getContext("2d");
+    if (!keepPng) {
+      ctx.fillStyle = "#fff";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+    ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+    const blob = await new Promise((resolve, reject) => {
+      canvas.toBlob(result => result ? resolve(result) : reject(new Error("Gagal memproses gambar.")), keepPng ? "image/png" : "image/jpeg", 0.82);
+    });
+    const extension = keepPng ? "png" : "jpg";
+    const contentType = keepPng ? "image/png" : "image/jpeg";
+    const path = `${authData.user.id}/${crypto.randomUUID()}.${extension}`;
+    const { error: uploadError } = await supabaseClient.storage
+      .from("site-images")
+      .upload(path, blob, { contentType, cacheControl: "3600", upsert: false });
+    if (uploadError) throw uploadError;
+
+    const { data: publicData } = supabaseClient.storage.from("site-images").getPublicUrl(path);
+    if (!publicData?.publicUrl) throw new Error("URL foto dari Supabase tidak tersedia.");
+    return publicData.publicUrl;
+  } finally {
+    URL.revokeObjectURL(objectUrl);
+  }
 }
 
 /* ---------- Pembuat formulir ---------- */
@@ -1500,7 +1543,7 @@ $("loginForm").addEventListener("submit", async e => {
     const fin = e.target.closest("[data-img-input]");
     if (fin) {
       const f = fin.dataset.imgInput, file = fin.files[0]; if (!file) return;
-      try { imgState[f] = await fileToDataUrl(file); clearNotice("formNotice"); refreshImageField(f); }
+      try { imgState[f] = await fileToStorageUrl(file); clearNotice("formNotice"); refreshImageField(f); }
       catch (err) { showNotice("formNotice", err.message); fin.value = ""; }
       return;
     }
