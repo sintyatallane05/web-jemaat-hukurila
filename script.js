@@ -87,7 +87,7 @@ const DEFAULTS = {
       coverTitle: "BAGAN POLA ORGANISASI JEMAAT HUKURILA",
       coverSub: "JEMAAT GPM HUKURILA",
       coverPeriod: "PERIODE 2025–2030",
-      photo: "/foto-bersama-pendeta-majelis.jpeg",
+      photo: "foto-bersama-pendeta-majelis.jpeg",
       photoCaption: "Pendeta dan Majelis Jemaat GPM Hukurila",
       majelisTitle: "MAJELIS JEMAAT",
       majelisPeriod: "PERIODE 2025–2030",
