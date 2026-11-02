@@ -47,8 +47,8 @@ const GEDUNG = "Gedung Gereja Jemaat GPM Hukurila";
 const DEFAULTS = {
   beranda: {
     main: {
-      logo: "assets/logo-gpm.png",
-      bg: "assets/gereja-ebenhaezer.jpg",
+      logo: "logo-gpm.png",
+      bg: "gereja-ebenhaezer.jpg",
       eyebrow: "GEREJA PROTESTAN MALUKU",
       line1: "Selamat Datang di",
       line2: "Jemaat GPM Hukurila",
@@ -67,7 +67,7 @@ const DEFAULTS = {
 
   profil: {
     main: {
-      image: "assets/gereja-hukurila.jpeg",
+      image: "gereja-hukurila.jpeg",
       captionSmall: "Gereja Protestan Maluku",
       captionTitle: "Jemaat GPM Hukurila",
       label: "PROFIL JEMAAT",
@@ -83,11 +83,11 @@ const DEFAULTS = {
   organisasi: {
     info: {
       heading: "Struktur Organisasi Pelayanan",
-      logo: "assets/logo-gpm-maluku.png",
+      logo: "logo-gpm-maluku.png",
       coverTitle: "BAGAN POLA ORGANISASI JEMAAT HUKURILA",
       coverSub: "JEMAAT GPM HUKURILA",
       coverPeriod: "PERIODE 2025–2030",
-      photo: "assets/foto-bersama-pendeta-majelis.jpeg",
+      photo: "/foto-bersama-pendeta-majelis.jpeg",
       photoCaption: "Pendeta dan Majelis Jemaat GPM Hukurila",
       majelisTitle: "MAJELIS JEMAAT",
       majelisPeriod: "PERIODE 2025–2030",
@@ -189,19 +189,20 @@ const DEFAULTS = {
   umkm: {
     heading: { kicker: "Karya dan kemandirian", title: "UMKM Jemaat", desc: "Dukung usaha dan produk karya warga jemaat." },
     items: withIds("umkm", [
-      { title: "Tortilla Kelor", tag: "UMKM Ebenhaezer", image: "assets/umkm-tortilla-kelor.jpg", contact: "6285348460202",
+      { title: "Tortilla Kelor", tag: "UMKM Ebenhaezer", image: "umkm-tortilla-kelor.jpg", contact: "6285348460202",
         desc: "Olahan berbahan daun kelor untuk melengkapi pilihan camilan keluarga." },
-      { title: "Sambal Goreng Singkong Hot", tag: "UMKM Ebenhaezer", image: "assets/umkm-sambal-goreng-singkong.jpg", contact: "6285348460202",
+      { title: "Sambal Goreng Singkong Hot", tag: "UMKM Ebenhaezer", image: "umkm-sambal-goreng-singkong.jpg", contact: "6285348460202",
         desc: "Camilan singkong dengan tampilan berbumbu pedas." },
-      { title: "Tortilla Ubi Ungu", tag: "UMKM Ebenhaezer", image: "assets/umkm-tortilla-ubi-ungu.jpg", contact: "6285348460202",
+      { title: "Tortilla Ubi Ungu", tag: "UMKM Ebenhaezer", image: "umkm-tortilla-ubi-ungu.jpg", contact: "6285348460202",
         desc: "Olahan ubi ungu dengan warna alami yang menarik." },
-      { title: "Puding Sayur Karang", tag: "UMKM Ebenhaezer", image: "assets/umkm-puding-sayur-karang.jpg", contact: "6285348460202",
+      { title: "Puding Sayur Karang", tag: "UMKM Ebenhaezer", image: "umkm-puding-sayur-karang.jpg", contact: "6285348460202",
         desc: "Puding dengan bahan hasil laut, dikemas untuk pilihan sajian keluarga." }
     ])
   },
   "informasi-lain": {
     heading: { kicker: "Informasi · Pengumuman", title: "Pengumuman", desc: "Informasi penting, pengumuman pelayanan, dan kabar lain untuk warga jemaat." },
     items: []
+
   },
   kontak: {
     heading: {
