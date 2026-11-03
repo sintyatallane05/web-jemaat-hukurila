@@ -131,10 +131,8 @@ h1, h2, h3, h4 { overflow-wrap: anywhere; }
 
 .brand { display: flex; align-items: center; gap: 11px; min-width: 0; flex-shrink: 0; }
 .brand-mark {
-  width: 42px; height: 42px; flex-shrink: 0; border-radius: 50%;
-  display: grid; place-items: center;
-  background: var(--green-900); color: var(--gold-400);
-  border: 2px solid var(--gold-500); font-size: 20px;
+  width: 42px; height: 42px; flex-shrink: 0;
+  display: block; object-fit: contain;
 }
 .brand-text strong, .brand-text small, .brand strong, .brand small { display: block; }
 .brand strong {
@@ -1177,4 +1175,47 @@ body.adm-lock { overflow: hidden; }
   .org-units span { min-width: 0; padding: 1mm 3mm; font-size: 6.5pt; }
 
   .org-person-card, .org-section, .org-sector, .organization-photo-frame, .org-subitem { break-inside: avoid; page-break-inside: avoid; }
+}
+
+
+/* PERBAIKAN MOBILE: pastikan bagian jadwal ibadah tidak tersembunyi
+   oleh animasi scroll-reveal pada layar dengan viewport pendek. */
+@media (max-width: 767px) {
+  #ibadah.worship-band.scroll-reveal,
+  #ibadah.worship-band.scroll-reveal:not(.show) {
+    opacity: 1 !important;
+    transform: none !important;
+    visibility: visible !important;
+  }
+
+  #ibadah .worship-inner,
+  #ibadah .worship-group,
+  #ibadah .worship-grid {
+    width: 100%;
+    min-width: 0;
+  }
+
+  #ibadah .worship-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+
+  #ibadah .schedule-card {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  #ibadah .worship-group-head {
+    align-items: flex-start;
+  }
+
+  #ibadah .worship-filter {
+    max-width: 100%;
+  }
+
+  #ibadah .chip {
+    min-height: 42px;
+    padding: 8px 14px;
+  }
 }
