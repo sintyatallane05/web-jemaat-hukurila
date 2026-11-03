@@ -1,9 +1,3 @@
-/* =====================================================================
-   JEMAAT GPM HUKURILA — script.js
-   Bagian 1: data bawaan (sama dengan yang tampil di layar pengunjung)
-   Data bawaan menjadi konten awal. Perubahan admin disimpan ke Supabase
-   pada tabel public.site_content; login dan hak akses menggunakan Supabase Auth/RLS.
-===================================================================== */
 "use strict";
 // Koneksi Supabase
 const SUPABASE_URL = "https://hdvzocfgbbqtkfukdldj.supabase.co";
@@ -47,8 +41,8 @@ const GEDUNG = "Gedung Gereja Jemaat GPM Hukurila";
 const DEFAULTS = {
   beranda: {
     main: {
-      logo: "logo-gpm.png",
-      bg: "gereja-ebenhaezer.jpg",
+      logo: "assets/logo-gpm.png",
+      bg: "assets/gereja-ebenhaezer.jpg",
       eyebrow: "GEREJA PROTESTAN MALUKU",
       line1: "Selamat Datang di",
       line2: "Jemaat GPM Hukurila",
@@ -67,7 +61,7 @@ const DEFAULTS = {
 
   profil: {
     main: {
-      image: "gereja-hukurila.jpeg",
+      image: "assets/gereja-hukurila.jpeg",
       captionSmall: "Gereja Protestan Maluku",
       captionTitle: "Jemaat GPM Hukurila",
       label: "PROFIL JEMAAT",
@@ -83,11 +77,11 @@ const DEFAULTS = {
   organisasi: {
     info: {
       heading: "Struktur Organisasi Pelayanan",
-      logo: "logo-gpm-maluku.png",
+      logo: "assets/logo-gpm-maluku.png",
       coverTitle: "BAGAN POLA ORGANISASI JEMAAT HUKURILA",
       coverSub: "JEMAAT GPM HUKURILA",
       coverPeriod: "PERIODE 2025–2030",
-      photo: "foto-bersama-pendeta-majelis.jpeg",
+      photo: "assets/foto-bersama-pendeta-majelis.jpeg",
       photoCaption: "Pendeta dan Majelis Jemaat GPM Hukurila",
       majelisTitle: "MAJELIS JEMAAT",
       majelisPeriod: "PERIODE 2025–2030",
@@ -189,13 +183,13 @@ const DEFAULTS = {
   umkm: {
     heading: { kicker: "Karya dan kemandirian", title: "UMKM Jemaat", desc: "Dukung usaha dan produk karya warga jemaat." },
     items: withIds("umkm", [
-      { title: "Tortilla Kelor", tag: "UMKM Ebenhaezer", image: "umkm-tortilla-kelor.jpg", contact: "6285348460202",
+      { title: "Tortilla Kelor", tag: "UMKM Ebenhaezer", image: "assets/umkm-tortilla-kelor.jpg", contact: "6285348460202",
         desc: "Olahan berbahan daun kelor untuk melengkapi pilihan camilan keluarga." },
-      { title: "Sambal Goreng Singkong Hot", tag: "UMKM Ebenhaezer", image: "umkm-sambal-goreng-singkong.jpg", contact: "6285348460202",
+      { title: "Sambal Goreng Singkong Hot", tag: "UMKM Ebenhaezer", image: "assets/umkm-sambal-goreng-singkong.jpg", contact: "6285348460202",
         desc: "Camilan singkong dengan tampilan berbumbu pedas." },
-      { title: "Tortilla Ubi Ungu", tag: "UMKM Ebenhaezer", image: "umkm-tortilla-ubi-ungu.jpg", contact: "6285348460202",
+      { title: "Tortilla Ubi Ungu", tag: "UMKM Ebenhaezer", image: "assets/umkm-tortilla-ubi-ungu.jpg", contact: "6285348460202",
         desc: "Olahan ubi ungu dengan warna alami yang menarik." },
-      { title: "Puding Sayur Karang", tag: "UMKM Ebenhaezer", image: "umkm-puding-sayur-karang.jpg", contact: "6285348460202",
+      { title: "Puding Sayur Karang", tag: "UMKM Ebenhaezer", image: "assets/umkm-puding-sayur-karang.jpg", contact: "6285348460202",
         desc: "Puding dengan bahan hasil laut, dikemas untuk pilihan sajian keluarga." }
     ])
   },
@@ -809,8 +803,10 @@ function initPublic() {
   if ("IntersectionObserver" in window) {
     const io = new IntersectionObserver(entries => {
       entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add("show"); io.unobserve(en.target); } });
-    }, { threshold: 0.12 });
+    }, { threshold: 0, rootMargin: "0px 0px -8% 0px" });
     reveal.forEach(el => io.observe(el));
+    /* Pengaman: bagian apa pun tidak boleh tetap tersembunyi (mis. bagian sangat panjang di HP) */
+    setTimeout(() => reveal.forEach(el => el.classList.add("show")), 2500);
   } else reveal.forEach(el => el.classList.add("show"));
 }
 
